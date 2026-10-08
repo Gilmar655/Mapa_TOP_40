@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f8fa">
+  <meta name="description" content="Painel interativo de geolocalização dos projetos TOP 40: filtros, mapas, rotas, indicadores, importação e exportação de dados.">
+  <title>TOP 40 | Localização dos Projetos</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="assets/style.css">
+  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script defer src="assets/data.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#mapSection">Ir para o mapa de projetos</a>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand-group">
+        <a class="brand-wordmark" href="./" aria-label="Página inicial do painel">enel<span class="brand-dot">.</span></a>
+        <span class="brand-separator" aria-hidden="true"></span>
+        <div class="brand-sub"><strong>TOP 40</strong><small>Inteligência geográfica</small></div>
+      </div>
+      <div class="top-right">
+        <span class="live-indicator"><i></i> Painel operacional</span>
+        <div class="clock-block"><strong id="clockTime">--:--:--</strong><small id="clockDate">--/--/----</small></div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <section class="hero">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-mark"></span> MONITORAMENTO GEORREFERENCIADO <span class="separator-dot">·</span> POLO LESTE</div>
+          <h1>Localização dos <em>projetos</em></h1>
+          <p>Explore a distribuição geográfica da carteira, aplique filtros operacionais e consulte cada projeto no mapa, no Google Maps ou na planilha completa.</p>
+          <div class="metadata"><span>Base carregada: <b id="baseDate">08/10/2026</b></span><span class="metadata-divider">|</span><span>Fonte: <b id="dataSource">PROJETOS_TOP_40_geolocalizacao.xlsx</b></span></div>
+        </div>
+        <div class="hero-actions">
+          <a class="btn btn-outline" id="myMapsLink" href="https://www.google.com/maps/d/viewer?mid=1FhSs4z4XyVo8q6ywBexvTMaPd01oMt0" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18-5-3V5l5 3 6-3 5 3v10l-5-3-6 3V8m6-3v10"/></svg> Abrir My Maps <span class="arrow">↗</span></a>
+          <a class="btn btn-primary" id="earthLink" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a17 17 0 0 1 0 18M12 3a17 17 0 0 0 0 18"/></svg> Abrir Google Earth <span class="arrow">↗</span></a>
+        </div>
+      </section>
+
+      <section class="metrics-grid" aria-label="Indicadores da carteira">
+        <article class="metric"><div class="metric-top"><span>Projetos encontrados</span><span class="metric-icon cyan">◈</span></div><div class="metric-value" id="kpiProjects">—</div><div class="metric-foot" id="kpiProjectsSub">Na seleção atual</div></article>
+        <article class="metric"><div class="metric-top"><span>Com geolocalização</span><span class="metric-icon green">◎</span></div><div class="metric-value" id="kpiLocated">—</div><div class="metric-foot" id="kpiLocatedSub">Coordenadas válidas</div></article>
+        <article class="metric"><div class="metric-top"><span>Pontos distintos</span><span class="metric-icon purple">⌖</span></div><div class="metric-value" id="kpiPoints">—</div><div class="metric-foot">Agrupados por coordenadas iguais</div></article>
+        <article class="metric"><div class="metric-top"><span>Sem localização</span><span class="metric-icon orange">!</span></div><div class="metric-value" id="kpiMissing">—</div><div class="metric-foot" id="kpiMissingSub">Não exibidos no mapa</div></article>
+        <article class="metric"><div class="metric-top"><span>Empreiteiras</span><span class="metric-icon blue">▤</span></div><div class="metric-value" id="kpiCompanies">—</div><div class="metric-foot" id="kpiCompaniesSub">Na seleção atual</div></article>
+      </section>
+
+      <section class="workspace" id="mapSection" aria-label="Mapa e filtros">
+        <aside class="filters-panel">
+          <div class="panel-title"><div><div class="section-kicker">EXPLORAÇÃO</div><h2>Filtros <span id="filtersCount" class="filter-count">0</span></h2></div><button id="resetFilters" class="quiet-link" type="button">Limpar tudo</button></div>
+          <div class="filter-control"><label for="searchText">Buscar projeto ou palavra-chave</label><div class="input-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></svg><input id="searchText" type="search" placeholder="Projeto, nota, circuito..." autocomplete="off"></div></div>
+          <div class="filter-control"><label for="filterCompany">Empreiteira</label><select id="filterCompany"><option value="">Todas as empreiteiras</option></select></div>
+          <div class="filter-control"><label for="filterStatus">Status</label><select id="filterStatus"><option value="">Todos os status</option></select></div>
+          <div class="filter-control"><label for="filterCity">Município</label><select id="filterCity"><option value="">Todos os municípios</option></select></div>
+          <div class="filter-control"><label for="filterCircuit">Circuito</label><select id="filterCircuit"><option value="">Todos os circuitos</option></select></div>
+          <div class="filters-two"><div class="filter-control"><label for="filterArea">Área</label><select id="filterArea"><option value="">Todas</option></select></div><div class="filter-control"><label for="filterPolo">Polo</label><select id="filterPolo"><option value="">Todos</option></select></div></div>
+          <div class="date-filter-heading">Período · Data ATEC</div>
+          <div class="filters-two"><div class="filter-control"><label for="filterDateStart">De</label><input id="filterDateStart" type="date"></div><div class="filter-control"><label for="filterDateEnd">Até</label><input id="filterDateEnd" type="date"></div></div>
+          <div class="date-filter-heading">Disponibilidade de localização</div>
+          <div class="location-selector" role="group" aria-label="Disponibilidade de coordenadas"><button type="button" class="location-option active" data-geo="all">Todos</button><button type="button" class="location-option" data-geo="with">Com GPS</button><button type="button" class="location-option" data-geo="without">Sem GPS</button></div>
+          <div class="filter-help"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-9v1"/></svg><span>Ao aplicar os filtros, o mapa, os indicadores, os gráficos e a planilha são atualizados juntos.</span></div>
+        </aside>
+
+        <div class="map-panel">
+          <div class="map-panel-header"><div><div class="section-kicker">VISÃO TERRITORIAL</div><h2>Mapa de projetos</h2><p id="mapSubtitle">Selecione um ponto para explorar os projetos vinculados.</p></div><div class="map-tools"><div class="toggle-group" role="group" aria-label="Tipo de mapa"><button id="mapStreet" type="button" class="active">Mapa</button><button id="mapSatellite" type="button">Satélite</button></div><button class="tool-btn" id="fitMap" type="button" title="Enquadrar projetos no mapa" aria-label="Enquadrar projetos">⛶</button></div></div>
+          <div class="map-frame"><div id="projectMap" role="application" aria-label="Mapa interativo dos projetos geolocalizados"></div><div class="map-fallback" id="mapFallback" hidden><strong>Não foi possível carregar o mapa.</strong><p>Confira sua conexão à internet. Os dados, filtros, rotas e a planilha permanecem disponíveis.</p><a id="mapFallbackMaps" href="https://www.google.com/maps/d/viewer?mid=1FhSs4z4XyVo8q6ywBexvTMaPd01oMt0" target="_blank" rel="noopener noreferrer">Abrir mapa no Google My Maps ↗</a></div><div class="map-overlay-tip" id="mapOverlayTip">Os números nos marcadores indicam projetos que compartilham o mesmo ponto.</div></div>
+          <div class="map-panel-footer"><div class="map-legend"><span><i class="legend-dot legend-start"></i>Start</span><span><i class="legend-dot legend-engelmig"></i>Engelmig</span><span><i class="legend-dot legend-psc"></i>PSC Alpitel</span><span><i class="legend-dot legend-multi"></i>Empreiteiras mistas</span></div><strong id="mapCounter">— pontos no mapa</strong></div>
+        </div>
+      </section>
+
+      <section class="analytics" aria-label="Análise da carteira">
+        <div class="analysis-card"><div class="analysis-head"><div><div class="section-kicker">DISTRIBUIÇÃO</div><h2>Projetos por empreiteira</h2></div><span class="analysis-sub">Seleção atual</span></div><div id="companyBars" class="chart-bars"></div></div>
+        <div class="analysis-card"><div class="analysis-head"><div><div class="section-kicker">COMPOSIÇÃO</div><h2>Status dos projetos</h2></div><span class="analysis-sub">Seleção atual</span></div><div id="statusBars" class="chart-bars"></div></div>
+      </section>
+
+      <section class="table-panel" id="tableSection" aria-label="Tabela completa da base de dados">
+        <div class="table-header"><div><div class="section-kicker">BASE DE DADOS</div><h2>Planilha operacional <span class="table-header-count" id="tableCount">— registros</span></h2><p>Todos os campos da planilha original, inclusive links de geolocalização. Arraste para visualizar as demais colunas.</p></div><div class="table-actions"><button class="btn btn-secondary btn-small" id="btnImport" type="button" title="Importar nova base Excel ou CSV">↑ Importar Excel/CSV</button><button class="btn btn-secondary btn-small" id="btnExportCsv" type="button">↓ Exportar CSV</button><a class="btn btn-secondary btn-small" href="dados/projetos_top40.kml" download="projetos_top40.kml" title="Arquivo KML para importar no Google Earth">↓ KML / Earth</a><button class="btn btn-secondary btn-small" id="btnExportSite" type="button" title="Gerar arquivo de dados para atualizar o GitHub Pages">↓ Base do site</button><button class="btn btn-primary btn-small" id="btnExportXlsx" type="button">↓ Exportar Excel</button></div></div>
+        <div class="table-toolbar"><div class="table-helper"><span class="live-mini"></span><strong id="tableSelection">Todos os projetos</strong><span class="table-divider">/</span><span id="tableColumnCount">20 colunas de origem</span></div><div class="table-pages"><label for="tablePageSize">Linhas por página</label><select id="tablePageSize"><option value="15">15</option><option value="30" selected>30</option><option value="82">82</option><option value="all">Todas</option></select></div></div>
+        <div class="table-scroll" tabindex="0" aria-label="Tabela horizontalmente rolável"><table id="dataTable"><thead><tr id="tableHeaders"></tr></thead><tbody id="tableRows"></tbody></table></div>
+        <div class="table-bottom"><div id="paginationInfo" class="pagination-info">—</div><div class="pagination-actions"><button class="btn-page" id="pagePrev" type="button">← Anterior</button><span id="pageIndicator">1 / 1</span><button class="btn-page" id="pageNext" type="button">Próxima →</button></div></div>
+        <div class="data-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 2 21h20L12 2Zm0 7v5m0 3v1"/></svg><span><b>Atenção à precisão geográfica:</b> projetos com coordenadas idênticas ficam agrupados em um mesmo marcador. Projetos sem latitude ou longitude permanecem na planilha, mas não aparecem no mapa.</span></div>
+      </section>
+
+      <footer class="footer"><span>TOP 40 · Painel de geolocalização de projetos · Polo Leste</span><span>Dados: planilha fornecida pelo usuário · Mapa: © OpenStreetMap / Esri</span></footer>
+    </main>
+  </div>
+
+  <div id="drawerBackdrop" class="drawer-backdrop" hidden></div>
+  <aside id="detailDrawer" class="detail-drawer" role="dialog" aria-modal="true" aria-labelledby="detailTitle" aria-hidden="true"><div class="drawer-head"><div><span class="section-kicker">DETALHES DO PROJETO</span><h2 id="detailTitle">Projeto</h2></div><button type="button" id="drawerClose" aria-label="Fechar detalhes">×</button></div><div id="drawerContent" class="drawer-content"></div></aside>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <input id="fileImport" type="file" accept=".xlsx,.xls,.csv,.ods" hidden>
+</body>
+</html>

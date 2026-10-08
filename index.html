@@ -9,9 +9,8 @@
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://unpkg.com">
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
   <link rel="stylesheet" href="assets/style.css">
-  <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script defer src="assets/geo-map.js"></script>
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script defer src="assets/data.js"></script>
   <script defer src="assets/app.js"></script>
@@ -71,7 +70,7 @@
 
         <div class="map-panel">
           <div class="map-panel-header"><div><div class="section-kicker">VISÃO TERRITORIAL</div><h2>Mapa de projetos</h2><p id="mapSubtitle">Selecione um ponto para explorar os projetos vinculados.</p></div><div class="map-tools"><div class="toggle-group" role="group" aria-label="Tipo de mapa"><button id="mapStreet" type="button" class="active">Mapa</button><button id="mapSatellite" type="button">Satélite</button></div><button class="tool-btn" id="fitMap" type="button" title="Enquadrar projetos no mapa" aria-label="Enquadrar projetos">⛶</button></div></div>
-          <div class="map-frame"><div id="projectMap" role="application" aria-label="Mapa interativo dos projetos geolocalizados"></div><div class="map-fallback" id="mapFallback" hidden><strong>Não foi possível carregar o mapa.</strong><p>Confira sua conexão à internet. Os dados, filtros, rotas e a planilha permanecem disponíveis.</p><a id="mapFallbackMaps" href="https://www.google.com/maps/d/viewer?mid=1FhSs4z4XyVo8q6ywBexvTMaPd01oMt0" target="_blank" rel="noopener noreferrer">Abrir mapa no Google My Maps ↗</a></div><div class="map-overlay-tip" id="mapOverlayTip">Os números nos marcadores indicam projetos que compartilham o mesmo ponto.</div></div>
+          <div class="map-frame"><div id="projectMap" role="application" aria-label="Mapa interativo dos projetos geolocalizados"></div><div class="map-fallback" id="mapFallback" hidden><strong>Não foi possível carregar o mapa.</strong><p>Verifique se o navegador permite executar JavaScript. As coordenadas permanecem na planilha.</p><a id="mapFallbackMaps" href="https://www.google.com/maps/d/viewer?mid=1FhSs4z4XyVo8q6ywBexvTMaPd01oMt0" target="_blank" rel="noopener noreferrer">Abrir mapa no Google My Maps ↗</a></div><div class="map-overlay-tip" id="mapOverlayTip">Os marcadores agrupam projetos na mesma coordenada ou em pontos próximos. Use + para aproximar.</div></div>
           <div class="map-panel-footer"><div class="map-legend"><span><i class="legend-dot legend-start"></i>Start</span><span><i class="legend-dot legend-engelmig"></i>Engelmig</span><span><i class="legend-dot legend-psc"></i>PSC Alpitel</span><span><i class="legend-dot legend-multi"></i>Empreiteiras mistas</span></div><strong id="mapCounter">— pontos no mapa</strong></div>
         </div>
       </section>

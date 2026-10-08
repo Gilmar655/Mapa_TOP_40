@@ -16,7 +16,8 @@ Site estático responsivo, pronto para publicação no **GitHub Pages**. Inclui 
 
 - `index.html`: página principal.
 - `assets/style.css`: apresentação responsiva (cores claras).
-- `assets/app.js`: filtros, mapa, indicadores, importação, exportação e detalhes dos projetos.
+- `assets/app.js`: filtros, indicadores, importação, exportação e detalhes dos projetos.
+- `assets/geo-map.js`: motor de mapa local, zoom, agrupamento dos pontos próximos e marcadores independentes de CDN.
 - `assets/data.js`: **base de dados operacional publicada**, carregada sem backend.
 - `assets/favicon.svg`: ícone do painel.
 - `dados/projetos.json`: cópia estruturada, legível por outras ferramentas.
@@ -39,14 +40,18 @@ Site estático responsivo, pronto para publicação no **GitHub Pages**. Inclui 
 
 ## Sobre o mapa
 
-- Os mapas de fundo são OpenStreetMap (mapa convencional) e Esri World Imagery (satélite).
-- Projetos com o **mesmo par latitude/longitude** ficam em um **mesmo marcador numerado**. Ao clicar, aparecem todos os projetos daquele ponto, individualizados por código. Não há deslocamento artificial de coordenadas.
+- Os mapas de fundo são OpenStreetMap (mapa convencional) e Esri World Imagery (satélite). **Mesmo se as imagens de fundo falharem por falta de internet, os marcadores continuam visíveis**, com coordenadas e rotas acessíveis.
+- Projetos com o **mesmo par latitude/longitude** ficam num mesmo marcador numerado. Coordenadas distintas, mas muito próximas na tela, são temporariamente agrupadas para evitar sobreposição: aproximar o mapa separa os pontos. Ao clicar, aparecem os projetos individualizados. Nenhum dado de GPS original é alterado.
 - Os dados de cada projeto vêm da planilha fornecida; **não foi realizada geocodificação adicional**, nem foram fabricados pontos sem GPS.
 - Os botões Google Earth / My Maps abrem os serviços externos originais; seu acesso pode depender das permissões de compartilhamento definidas pelo proprietário.
-- As bibliotecas Leaflet e SheetJS e os mapas base são carregados pela internet (CDNs / provedores de mapas). A tabela e os filtros funcionam mesmo se o mapa não carregar. A exportação/importação de `.xlsx` necessita da biblioteca SheetJS; CSV conta com implementação local.
+- O mecanismo de mapa e os marcadores estão incluídos em `assets/geo-map.js` e **não precisam de bibliotecas externas**. As imagens de fundo exigem internet; os marcadores funcionam sem elas. A importação/exportação de `.xlsx` necessita da biblioteca SheetJS carregada pela internet; CSV conta com implementação local.
 
 ## Cartografia e privacidade
 
 Antes de publicar o site em repositório **público**, confira se os códigos, coordenadas, contratos e demais informações operacionais podem ser divulgados. Se os dados forem restritos à operação, utilize um ambiente de hospedagem com controle de acesso, pois o GitHub Pages de repositório público não impede que terceiros acessem os arquivos de dados.
 
 Fonte: `PROJETOS_TOP_40_geolocalizacao.xlsx` recebido em 08/10/2026. Criado para a carteira de projetos TOP 40, Polo Leste.
+
+## Repositório de publicação
+
+Repositório fornecido pelo responsável: `https://github.com/Gilmar655/Mapa_TOP_40`. Endereço esperado após ativação do GitHub Pages: `https://gilmar655.github.io/Mapa_TOP_40/`. O repositório público sozinho não ativa o Pages; use as instruções de configuração acima.
